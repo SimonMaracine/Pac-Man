@@ -23,21 +23,27 @@ class PacMan(object):
     def __init__(self):
         self.pos = Vector(14 * GRID - GRID // 2, 23 * GRID)
         self.width = GRID * 2
-        self.vel = 4
+        self.vel = 3
         self.dir = Vector(0, 0)
         self.go_x = True
         self.go_y = True
         # self.dirs = {"left": False, "right": False, "up": False, "down": False}
 
     def render(self):
-        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
+        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
+        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
+
+        pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
+        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
+        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
+        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
         # if self.go_x: self.pos.x += self.dir.x
         # if self.go_y: self.pos.y += self.dir.y
         self.pos.x += self.dir.x
         self.pos.y += self.dir.y
-        y = self.pos.y
+        y = self.pos.y  # todo can be refactored
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos = Vector(WIDTH + 2, y)
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
@@ -79,18 +85,22 @@ class PacMan(object):
         #     # self.go_y = True
 
     def collide(self, wall):
-        if self.pos.x < wall.x + wall.width < self.pos.x + 5:
-            if wall.y + wall.height > self.pos.y and wall.y < self.pos.y + self.width:
+        if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
+            if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
-        elif self.pos.x + self.width > wall.x > self.pos.x - 5:
-            if wall.y + wall.height > self.pos.y and wall.y < self.pos.y + self.width:
+
+        if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
+            if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
-        elif self.pos.y < wall.y + wall.height < self.pos.y + 5:
-            if self.pos.x + self.width > wall.x and self.pos.x < wall.x + wall.width:
+
+        if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
+            if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
-        elif self.pos.y + self.width > wall.y > self.pos.y + self.width - 5:
-            if self.pos.x + self.width > wall.x and self.pos.x < wall.x + wall.width:
+
+        if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
+            if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
+
         else:
             return None
 
@@ -105,6 +115,7 @@ class PacMan(object):
             # self.pos.x -= self.vel
         elif side == "up":
             self.dir.y = 0
+            # print("up")
             # self.go_y = False
             # self.pos.y += self.vel
         elif side == "down":
@@ -182,7 +193,7 @@ def init():
     down_left_generic_wall = Wall(8 * GRID, 22 * GRID, 4 * GRID, GRID)
     down_right_generic_wall = Wall(WIDTH - 12 * GRID, 22 * GRID, 4 * GRID, GRID)
     middle_h1_wall = Wall(11 * GRID, 19 * GRID, 7 * GRID, GRID)
-    middle_h2_wall = Wall(11 * GRID, 25 * GRID, 7 * GRID, GRID)
+    middle_h2_wall = Wall(11 * GRID, 25 * GRID, 7 * GRID, GRID)  # here
     middle_v1_wall = Wall(14 * GRID, 19 * GRID, GRID, 4 * GRID)
     middle_v2_wall = Wall(14 * GRID, 25 * GRID, GRID, 4 * GRID)
     h1_down_wall = Wall(3 * GRID, HEIGHT - 10 * GRID, 3 * GRID, GRID)
@@ -276,18 +287,20 @@ def loop():
         pacman.render()
         pacman.update()
 
-        map[29].render()
-        map[41].render()
-        pacman.collide(map[29])
-        pacman.collide(map[41])
+        # map[29].render()
+        # map[41].render()
+        # pacman.collide(map[29])
+        # pacman.collide(map[41])
 
-        # for wall in map:
-        #     wall.render()
-        #     pacman.collide(wall)
-        # # show_grid()
+        for wall in map:
+            wall.render()
+            pacman.collide(wall)
+
+        show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
+        print(pacman.pos)
 
 
 def main():
