@@ -43,11 +43,10 @@ class PacMan(object):
         # if self.go_y: self.pos.y += self.dir.y
         self.pos.x += self.dir.x
         self.pos.y += self.dir.y
-        y = self.pos.y  # todo can be refactored
         if self.pos.x < -self.width * 10:  # left tunnel
-            self.pos = Vector(WIDTH + 2, y)
+            self.pos.x = WIDTH
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
-            self.pos = Vector(-self.width - 2, y)
+            self.pos.x = -self.width
         # self.go_x = True
         # self.go_y = True
 
