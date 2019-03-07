@@ -39,6 +39,22 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
+        if self.colls["down"] and not self.colls["up"] and self.dir.y != 3 \
+                or not self.colls["down"] and self.colls["up"] and self.dir.y != -3:
+            self.go_y = True
+            if self.dir.x == 3:
+                self.pos.x -= self.vel
+            else:
+                self.pos.x += self.vel
+
+        if self.colls["right"] and not self.colls["left"] and self.dir.x != -3 \
+                or not self.colls["right"] and self.colls["left"] and self.dir.x != 3:
+            self.go_x = True
+            if self.dir.y == 3:
+                self.pos.y -= self.vel
+            else:
+                self.pos.y += self.vel
+
         if self.go_x:
             self.pos.x += self.dir.x
         if self.go_y:
@@ -61,10 +77,12 @@ class PacMan(object):
             self.dir.x = -self.vel
             if self.colls["right"] and not self.colls["left"]:
                 self.go_x = True
+
         elif direction == "right":
             self.dir.x = self.vel
             if self.colls["left"] and not self.colls["right"]:
                 self.go_x = True
+
         elif direction == "up":
             self.dir.y = -self.vel
             if self.colls["down"] and not self.colls["up"]:
