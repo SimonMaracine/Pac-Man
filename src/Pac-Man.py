@@ -59,21 +59,27 @@ class PacMan(object):
     def change_dir(self, direction):
         if direction == "left":
             self.dir.x = -self.vel
-            if self.colls["right"] and not self.colls["left"]:
-                self.go_x = True
+            if self.colls["left"]:
+                self.pos.x += self.vel
+            self.go_x = True
+
         elif direction == "right":
             self.dir.x = self.vel
-            if self.colls["left"] and not self.colls["right"]:
-                self.go_x = True
+            if self.colls["right"]:
+                self.pos.x -= self.vel
+            self.go_x = True
+
         elif direction == "up":
             self.dir.y = -self.vel
-            if self.colls["down"] and not self.colls["up"]:
-                self.go_y = True
+            if self.colls["up"]:
+                self.pos.y += self.vel
+            self.go_y = True
 
         elif direction == "down":
             self.dir.y = self.vel
-            if self.colls["up"] and not self.colls["down"]:
-                self.go_y = True
+            if self.colls["down"]:
+                self.pos.y -= self.vel
+            self.go_y = True
 
     def collide(self, wall):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
@@ -100,19 +106,15 @@ class PacMan(object):
         if side == "left":
             # self.dir.x = 0
             self.go_x = False
-            # self.pos.x += self.vel
         elif side == "right":
             # self.dir.x = 0
             self.go_x = False
-            # self.pos.x -= self.vel
         elif side == "up":
             # self.dir.y = 0
             self.go_y = False
-            # self.pos.y += self.vel
         elif side == "down":
             # self.dir.y = 0
             self.go_y = False
-            # self.pos.y -= self.vel
 
     def eat(self):
         pass
