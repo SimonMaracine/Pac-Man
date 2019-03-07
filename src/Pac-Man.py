@@ -39,6 +39,9 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
+        if not self.colls["up"] and self.colls["down"] and self.dir.y != 3:
+            self.go_y = True
+
         if self.go_x:
             self.pos.x += self.dir.x
         if self.go_y:
@@ -277,7 +280,6 @@ def loop():
                     pacman.change_dir("down")
 
         window.fill((0, 0, 0))
-        pacman.render()
         pacman.update()
 
         # map[29].render()
@@ -289,6 +291,7 @@ def loop():
             wall.render()
             pacman.collide(wall)
 
+        pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
