@@ -2,7 +2,10 @@
   <dictionary name="Simon M">
     <words>
       <w>calibri</w>
+      <w>colls</w>
+      <w>hitbox</w>
       <w>pacman</w>
+      <w>pygame</w>
     </words>
   </dictionary>
 </component>

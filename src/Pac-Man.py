@@ -26,8 +26,8 @@ class PacMan(object):
         self.vel = 3
         self.dir = Vector(0, 0)
         self.go_x = True
-        self.go_y = True
-        # self.dirs = {"left": False, "right": False, "up": False, "down": False}
+        self.go_y = False
+        self.colls = {"left": False, "right": False, "up": True, "down": True}
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
@@ -39,87 +39,79 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        # if self.go_x: self.pos.x += self.dir.x
-        # if self.go_y: self.pos.y += self.dir.y
-        self.pos.x += self.dir.x
-        self.pos.y += self.dir.y
+        if self.go_x:
+            self.pos.x += self.dir.x
+        if self.go_y:
+            self.pos.y += self.dir.y
+
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos.x = WIDTH
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
             self.pos.x = -self.width
-        # self.go_x = True
-        # self.go_y = True
+
+        self.go_x = True
+        self.go_y = True
+        self.colls["left"] = False
+        self.colls["right"] = False
+        self.colls["up"] = False
+        self.colls["down"] = False
 
     def change_dir(self, direction):
-        # for dir in self.dirs:
-        #     if dir == direction:
-        #         self.dirs[dir] = True
-        #     else:
-        #         self.dirs[dir] = False
-
         if direction == "left":
-            self.dir = Vector(-self.vel, 0)
-            # self.go_x = True
+            self.dir.x = -self.vel
+            if self.colls["right"] and not self.colls["left"]:
+                self.go_x = True
         elif direction == "right":
-            self.dir = Vector(self.vel, 0)
-            # self.go_x = True
+            self.dir.x = self.vel
+            if self.colls["left"] and not self.colls["right"]:
+                self.go_x = True
         elif direction == "up":
-            self.dir = Vector(0, -self.vel)
-            # self.go_y = True
-        elif direction == "down":
-            self.dir = Vector(0, self.vel)
-            # self.go_x = True
+            self.dir.y = -self.vel
+            if self.colls["down"] and not self.colls["up"]:
+                self.go_y = True
 
-        # if direction == "left":
-        #     self.dir.x = -self.vel
-        #     # self.go_x = True
-        # elif direction == "right":
-        #     self.dir.x = self.vel
-        #     # self.go_x = True
-        # elif direction == "up":
-        #     self.dir.y = -self.vel
-        #     # self.go_y = True
-        # elif direction == "down":
-        #     self.dir.y = self.vel
-        #     # self.go_y = True
+        elif direction == "down":
+            self.dir.y = self.vel
+            if self.colls["up"] and not self.colls["down"]:
+                self.go_y = True
 
     def collide(self, wall):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
+                self.colls["left"] = True
 
         if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
+                self.colls["right"] = True
 
         if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
+                self.colls["up"] = True
 
         if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
-
-        else:
-            return None
+                self.colls["down"] = True
 
     def stop(self, side):
         if side == "left":
-            self.dir.x = 0
-            # self.go_x = False
+            # self.dir.x = 0
+            self.go_x = False
             # self.pos.x += self.vel
         elif side == "right":
-            self.dir.x = 0
-            # self.go_x = False
+            # self.dir.x = 0
+            self.go_x = False
             # self.pos.x -= self.vel
         elif side == "up":
-            self.dir.y = 0
-            # print("up")
-            # self.go_y = False
+            # self.dir.y = 0
+            self.go_y = False
             # self.pos.y += self.vel
         elif side == "down":
-            self.dir.y = 0
-            # self.go_y = False
+            # self.dir.y = 0
+            self.go_y = False
             # self.pos.y -= self.vel
 
     def eat(self):
@@ -299,7 +291,9 @@ def loop():
         show_fps()
         pygame.display.flip()
         clock.tick(30)
-        print(pacman.pos)
+        # print(pacman.pos)
+        print(pacman.dir)
+        # print(pacman.colls)
 
 
 def main():
