@@ -27,7 +27,11 @@ class PacMan(object):
         self.dir = Vector(0, 0)
         self.go_x = True
         self.go_y = False
-        self.colls = {"left": False, "right": False, "up": True, "down": True}
+        self.hit = {"left": False, "right": False, "up": True, "down": True}
+        self.left = 1
+        self.right = 1
+        self.up = 1
+        self.down = 1
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
@@ -39,21 +43,26 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        # if self.colls["down"] and not self.colls["up"] and self.dir.y != 3 \
-        #         or not self.colls["down"] and self.colls["up"] and self.dir.y != -3:
-        #     self.go_y = True
-        #     if self.dir.x == 3:
-        #         self.pos.x -= self.vel
-        #     else:
-        #         self.pos.x += self.vel
-        #
-        # if self.colls["right"] and not self.colls["left"] and self.dir.x != -3 \
-        #         or not self.colls["right"] and self.colls["left"] and self.dir.x != 3:
-        #     self.go_x = True
-        #     if self.dir.y == 3:
-        #         self.pos.y -= self.vel
-        #     else:
-        #         self.pos.y += self.vel
+        if self.hit["down"] and not self.hit["up"] and self.dir.y != 3 \
+                or not self.hit["down"] and self.hit["up"] and self.dir.y != -3:
+            self.go_y = True
+            if self.dir.y != 0:
+                self.go_x = False
+
+        if self.hit["right"] and not self.hit["left"] and self.dir.x != -3 \
+                or not self.hit["right"] and self.hit["left"] and self.dir.x != 3:
+            self.go_x = True
+            if self.dir.y != 0:
+                self.go_y = False
+
+        if not self.hit["left"]:
+            self.left = 1
+        if not self.hit["right"]:
+            self.right = 1
+        if not self.hit["up"]:
+            self.up = 1
+        if not self.hit["down"]:
+            self.down = 1
 
         if self.go_x:
             self.pos.x += self.dir.x
@@ -67,70 +76,71 @@ class PacMan(object):
 
         self.go_x = True
         self.go_y = True
-        self.colls["left"] = False
-        self.colls["right"] = False
-        self.colls["up"] = False
-        self.colls["down"] = False
+        self.hit["left"] = False
+        self.hit["right"] = False
+        self.hit["up"] = False
+        self.hit["down"] = False
 
     def change_dir(self, direction):
         if direction == "left":
             self.dir.x = -self.vel
-            if self.colls["right"] and not self.colls["left"]:
+            if self.hit["right"] and not self.hit["left"]:
                 self.go_x = True
-
         elif direction == "right":
             self.dir.x = self.vel
-            if self.colls["left"] and not self.colls["right"]:
+            if self.hit["left"] and not self.hit["right"]:
                 self.go_x = True
-
         elif direction == "up":
             self.dir.y = -self.vel
-            if self.colls["down"] and not self.colls["up"]:
+            if self.hit["down"] and not self.hit["up"]:
                 self.go_y = True
-
         elif direction == "down":
             self.dir.y = self.vel
-            if self.colls["up"] and not self.colls["down"]:
+            if self.hit["up"] and not self.hit["down"]:
                 self.go_y = True
 
     def collide(self, wall):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
-                self.colls["left"] = True
+                self.hit["left"] = True
 
         if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
-                self.colls["right"] = True
+                self.hit["right"] = True
 
         if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
-                self.colls["up"] = True
+                self.hit["up"] = True
 
         if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
-                self.colls["down"] = True
+                self.hit["down"] = True
 
     def stop(self, side):
         if side == "left":
-            # self.dir.x = 0
+            if self.left == 1:
+                self.dir.x = 0
+                self.left = 0
             self.go_x = False
-            # self.pos.x += self.vel
         elif side == "right":
-            # self.dir.x = 0
+            if self.right == 1:
+                self.dir.x = 0
+                self.right = 0
             self.go_x = False
-            # self.pos.x -= self.vel
         elif side == "up":
-            # self.dir.y = 0
+            if self.up == 1:
+                self.dir.y = 0
+                self.up = 0
             self.go_y = False
-            # self.pos.y += self.vel
         elif side == "down":
-            # self.dir.y = 0
+            if self.down == 1:
+                self.dir.y = 0
+                self.down = 0
             self.go_y = False
-            # self.pos.y -= self.vel
 
     def eat(self):
         pass
@@ -295,23 +305,16 @@ def loop():
         window.fill((0, 0, 0))
         pacman.render()
         pacman.update()
-
-        # map[29].render()
-        # map[41].render()
-        # pacman.collide(map[29])
-        # pacman.collide(map[41])
-
         for wall in map:
             wall.render()
             pacman.collide(wall)
-
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
         print(pacman.dir)
-        # print(pacman.colls)
+        # print(pacman.hit)
 
 
 def main():
