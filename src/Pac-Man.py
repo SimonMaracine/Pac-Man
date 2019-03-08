@@ -49,10 +49,10 @@ class PacMan(object):
             if self.dir.y != 0:
                 self.go_x = False
 
-        if self.hit["right"] and not self.hit["left"] and self.dir.x != -3 \
-                or not self.hit["right"] and self.hit["left"] and self.dir.x != 3:
+        if self.hit["right"] and not self.hit["left"] and self.dir.x != 3 \
+                or not self.hit["right"] and self.hit["left"] and self.dir.x != -3:
             self.go_x = True
-            if self.dir.y != 0:
+            if self.dir.x != 0:
                 self.go_y = False
 
         if not self.hit["left"]:
@@ -126,18 +126,21 @@ class PacMan(object):
                 self.dir.x = 0
                 self.left = 0
             self.go_x = False
-        elif side == "right":
+
+        if side == "right":
             if self.right == 1:
                 self.dir.x = 0
                 self.right = 0
             self.go_x = False
-        elif side == "up":
-            if self.up == 1:
+
+        if side == "up":
+            if (self.up == 1 and self.down != 1) or (self.up == 1 and self.down != 0 and (self.right or self.left)):
                 self.dir.y = 0
                 self.up = 0
             self.go_y = False
-        elif side == "down":
-            if self.down == 1:
+
+        if side == "down":
+            if self.down == 1 and (self.left or self.right) and self.up != 1:  # todo nasty bug here
                 self.dir.y = 0
                 self.down = 0
             self.go_y = False
