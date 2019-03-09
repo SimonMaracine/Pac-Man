@@ -34,13 +34,13 @@ class PacMan(object):
         self.down = 1
 
     def render(self):
-        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
-        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
+        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
+        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
 
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
         if self.hit["down"] and not self.hit["up"] and self.dir.y != 3 \
@@ -122,25 +122,25 @@ class PacMan(object):
 
     def stop(self, side):
         if side == "left":
-            if self.left == 1:
+            if self.left == 1 and self.right != 0:
                 self.dir.x = 0
                 self.left = 0
             self.go_x = False
 
         if side == "right":
-            if self.right == 1:
+            if self.right == 1 and self.left != 0:
                 self.dir.x = 0
                 self.right = 0
             self.go_x = False
 
         if side == "up":
-            if (self.up == 1 and self.down != 1) or (self.up == 1 and self.down != 0 and (self.right or self.left)):
+            if self.up == 1 and self.down != 0:
                 self.dir.y = 0
                 self.up = 0
             self.go_y = False
 
         if side == "down":
-            if self.down == 1 and (self.left or self.right) and self.up != 1:  # todo nasty bug here
+            if self.down == 1 and self.up != 0:  # todo nasty bug here
                 self.dir.y = 0
                 self.down = 0
             self.go_y = False
@@ -316,8 +316,8 @@ def loop():
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        print(pacman.dir)
         # print(pacman.hit)
+        # print(pacman.dir)
 
 
 def main():
