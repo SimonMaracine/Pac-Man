@@ -24,7 +24,14 @@ class PacMan(object):
         self.pos = Vector(14 * GRID - GRID // 2, 23 * GRID)
         self.width = GRID * 2
         self.vel = 3
-        self.dir = Vector(0, 0)
+        self.next_dir = Vector(0, 0)
+        self.left = 0
+        self.right = 0
+        self.up = 0
+        self.down = 0
+        self.go_x = True
+        self.go_y = True
+        self.hit = {"left": False, "right": False, "up": True, "down": True}
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -36,52 +43,91 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        self.pos += self.dir
+        self.pos.x += self.right
+        self.pos.x -= self.left
+        self.pos.y -= self.up
+        self.pos.y += self.down
+
+        if self.go_x:
+            self.pos.x += self.next_dir.x
+        if self.go_y:
+            self.pos.y += self.next_dir.y
 
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos.x = WIDTH
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
             self.pos.x = -self.width
 
+        for side in self.hit:
+            self.hit[side] = False
+
+        self.go_x = True
+        self.go_y = True
+
     def change_dir(self, direction):
         if direction == "left":
-            self.dir.x = -self.vel
+            if not self.hit["left"]:
+                self.left = self.vel
+                self.right = 0
+            else:
+                self.next_dir = Vector(-self.vel, 0)
+                # self.pos.x += self.vel
         elif direction == "right":
-            self.dir.x = self.vel
+            if not self.hit["right"]:
+                self.right = self.vel
+                self.left = 0
+            else:
+                self.next_dir = Vector(self.vel, 0)
+                # self.pos.x -= self.vel
         elif direction == "up":
-            self.dir.y = -self.vel
+            if not self.hit["up"]:
+                self.up = self.vel
+                self.down = 0
+            else:
+                self.next_dir = Vector(0, -self.vel)
+                # self.pos.y += self.vel
         elif direction == "down":
-            self.dir.y = self.vel
+            if not self.hit["down"]:
+                self.down = self.vel
+                self.up = 0
+            else:
+                self.next_dir = Vector(0, self.vel)
+                # self.pos.y -= self.vel
 
     def collide(self, wall):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
+                self.hit["left"] = True
 
         if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
+                self.hit["right"] = True
 
         if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
+                self.hit["up"] = True
 
         if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
+                self.hit["down"] = True
 
     def stop(self, side):
         if side == "left":
-            self.dir.x = 0
-
-        if side == "right":
-            self.dir.x = 0
-
-        if side == "up":
-            self.dir.y = 0
-
-        if side == "down":
-            self.dir.y = 0
+            self.left = 0
+            self.go_x = False
+        elif side == "right":
+            self.right = 0
+            self.go_x = False
+        elif side == "up":
+            self.up = 0
+            self.go_y = False
+        elif side == "down":
+            self.down = 0
+            self.go_y = False
 
     def eat(self):
         pass
@@ -244,17 +290,18 @@ def loop():
                     pacman.change_dir("down")
 
         window.fill((0, 0, 0))
-        pacman.render()
         pacman.update()
         for wall in map:
             wall.render()
             pacman.collide(wall)
+        pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        print(pacman.dir)
+        # print(pacman.hit)
+        print(pacman.next_dir)
 
 
 def main():
