@@ -36,7 +36,6 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-
         self.pos += self.dir
 
         if self.pos.x < -self.width * 10:  # left tunnel
@@ -255,8 +254,7 @@ def loop():
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        # print(pacman.hit)
-        # print(pacman.dir)
+        print(pacman.dir)
 
 
 def main():
