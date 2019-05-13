@@ -23,8 +23,8 @@ class PacMan(object):
     def __init__(self):
         self.pos = Vector(14 * GRID - GRID // 2, 23 * GRID)
         self.width = GRID * 2
-        self.vel = 3
-        self.dir = Vector(0, 0)
+        self.speed = 3
+        self.vel = Vector(0, 0)
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -36,7 +36,7 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        self.pos += self.dir
+        self.pos += self.vel
 
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos.x = WIDTH
@@ -45,13 +45,13 @@ class PacMan(object):
 
     def change_dir(self, direction):
         if direction == "left":
-            self.dir.x = -self.vel
+            self.vel.x = -self.speed
         elif direction == "right":
-            self.dir.x = self.vel
+            self.vel.x = self.speed
         elif direction == "up":
-            self.dir.y = -self.vel
+            self.vel.y = -self.speed
         elif direction == "down":
-            self.dir.y = self.vel
+            self.vel.y = self.speed
 
     def collide(self, wall):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
@@ -72,16 +72,20 @@ class PacMan(object):
 
     def stop(self, side):
         if side == "left":
-            self.dir.x = 0
+            self.vel.x = 0
+            pass
 
-        if side == "right":
-            self.dir.x = 0
+        elif side == "right":
+            self.vel.x = 0
+            pass
 
-        if side == "up":
-            self.dir.y = 0
+        elif side == "up":
+            self.vel.y = 0
+            pass
 
-        if side == "down":
-            self.dir.y = 0
+        elif side == "down":
+            self.vel.y = 0
+            pass
 
     def eat(self):
         pass
@@ -244,17 +248,17 @@ def loop():
                     pacman.change_dir("down")
 
         window.fill((0, 0, 0))
-        pacman.render()
-        pacman.update()
         for wall in map:
             wall.render()
             pacman.collide(wall)
+        pacman.update()
+        pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        print(pacman.dir)
+        print(pacman.vel)
 
 
 def main():
