@@ -23,8 +23,10 @@ class PacMan(object):
     def __init__(self):
         self.pos = Vector(14 * GRID - GRID // 2, 23 * GRID)
         self.width = GRID * 2
-        self.vel = 3
-        self.dir = Vector(0, 0)
+        self.speed = 3
+        self.vel = Vector(0, 0)
+        self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
+        self.dir = {"left": False, "right": False, "up": False, "down": False}
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -36,52 +38,105 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        self.pos += self.dir
+        # self.pos += self.vel
+        if self.vel.x > 0 and not self.hit_wall["right"] or self.vel.x < 0 and not self.hit_wall["left"]:
+            self.pos.x += self.vel.x
+            dir = "left" if self.vel.x < 0 else "right"
+            self.dir[dir] = True
+            for d in self.dir:
+                if d != dir:
+                    self.dir[d] = False
+        if self.vel.y > 0 and not self.hit_wall["down"] or self.vel.y < 0 and not self.hit_wall["up"]:
+            self.pos.y += self.vel.y
+            dir = "up" if self.vel.y < 0 else "down"
+            self.dir[dir] = True
+            for d in self.dir:
+                if d != dir:
+                    self.dir[d] = False
+
+        print(self.dir)
 
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos.x = WIDTH
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
             self.pos.x = -self.width
 
+        # print(self.hit_wall)
+        for side in self.hit_wall:
+            self.hit_wall[side] = False
+
     def change_dir(self, direction):
         if direction == "left":
-            self.dir.x = -self.vel
+            self.vel.x = -self.speed
+            # self.dir["left"] = True
         elif direction == "right":
-            self.dir.x = self.vel
+            self.vel.x = self.speed
+            # self.dir["right"] = True
         elif direction == "up":
-            self.dir.y = -self.vel
+            self.vel.y = -self.speed
+            # self.dir["up"] = True
         elif direction == "down":
-            self.dir.y = self.vel
+            self.vel.y = self.speed
+            # self.dir["down"] = True
+
+        if self.vel.x == 0 and self.vel.y != 0:
+            dir = "up" if self.vel.y < 0 else "down"
+            self.dir[dir] = True
+            for d in self.dir:
+                if d != dir:
+                    self.dir[d] = False
+        elif self.vel.x != 0 and self.vel.y == 0:
+            dir = "left" if self.vel.x < 0 else "right"
+            self.dir[dir] = True
+            for d in self.dir:
+                if d != dir:
+                    self.dir[d] = False
 
     def collide(self, wall):
-        if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
+        if self.pos.x < wall.x + wall.width < self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
+                self.pos.x += self.speed
                 self.stop("left")
+                self.hit_wall["left"] = True
 
-        if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
+        if self.pos.x + self.width > wall.x > self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
+                self.pos.x -= self.speed
                 self.stop("right")
+                self.hit_wall["right"] = True
 
-        if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
+        if self.pos.y < wall.y + wall.height < self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
+                self.pos.y += self.speed
                 self.stop("up")
+                self.hit_wall["up"] = True
 
-        if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
+        if self.pos.y + self.width > wall.y > self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
+                self.pos.y -= self.speed
                 self.stop("down")
+                self.hit_wall["down"] = True
 
     def stop(self, side):
         if side == "left":
-            self.dir.x = 0
+            if self.dir["left"]:
+                self.vel.x = 0
+            pass
 
-        if side == "right":
-            self.dir.x = 0
+        elif side == "right":
+            if self.dir["right"]:
+                self.vel.x = 0
+            pass
 
-        if side == "up":
-            self.dir.y = 0
+        elif side == "up":
+            if self.dir["up"]:
+                self.vel.y = 0
+            pass
 
-        if side == "down":
-            self.dir.y = 0
+        elif side == "down":
+            if self.dir["down"]:
+                self.vel.y = 0
+            pass
 
     def eat(self):
         pass
@@ -244,17 +299,20 @@ def loop():
                     pacman.change_dir("down")
 
         window.fill((0, 0, 0))
-        pacman.render()
-        pacman.update()
         for wall in map:
             wall.render()
             pacman.collide(wall)
+        pacman.update()
+        pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
+
         # print(pacman.pos)
-        print(pacman.dir)
+        # print(pacman.vel)
+        # print(pacman.hit_wall)
+        # print(pacman.dir)
 
 
 def main():
