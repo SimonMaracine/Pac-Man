@@ -8,6 +8,7 @@ WIDTH = 29 * GRID
 HEIGHT = 32 * GRID
 running = True
 
+
 class Wall(object):
     def __init__(self, x, y, width, height):
         self.x = x
@@ -19,12 +20,22 @@ class Wall(object):
         pygame.draw.rect(window, (0, 0, 200), (self.x, self.y, self.width, self.height), 4)
 
 
+class Node(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def render(self):
+        pygame.draw.circle(window, (0, 0, 255), (self.x, self.y), 8)
+
+
 class PacMan(object):
     def __init__(self):
         self.pos = Vector(14 * GRID - GRID // 2, 23 * GRID)
         self.width = GRID * 2
         self.speed = 3
         self.vel = Vector(0, 0)
+        self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -43,6 +54,9 @@ class PacMan(object):
         elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
             self.pos.x = -self.width
 
+        for side in self.hit_wall:
+            self.hit_wall[side] = False
+
     def change_dir(self, direction):
         if direction == "left":
             self.vel.x = -self.speed
@@ -57,18 +71,22 @@ class PacMan(object):
         if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
+                self.hit_wall["left"] = True
 
         if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
+                self.hit_wall["right"] = True
 
         if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
+                self.hit_wall["up"] = True
 
         if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
+                self.hit_wall["down"] = True
 
     def stop(self, side):
         if side == "left":
@@ -108,7 +126,7 @@ def show_grid():
 
 
 def init():
-    global window, clock, fps_font, map
+    global window, clock, fps_font, map, nodes
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     pygame.init()
     window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -170,7 +188,7 @@ def init():
     v4_down_wall = Wall(WIDTH - 9 * GRID, HEIGHT - 7 * GRID, GRID, 4 * GRID)
     left_weird_wall = Wall(0, HEIGHT - 7 * GRID, 3 * GRID, GRID)
     right_weird_wall = Wall(WIDTH - 3 * GRID, HEIGHT - 7 * GRID, 3 * GRID, GRID)
-    map = [
+    map = (
         top_wall,
         bottom_wall,
         left_top_wall,
@@ -225,7 +243,12 @@ def init():
         v4_down_wall,
         left_weird_wall,
         right_weird_wall
-    ]
+    )
+    node1 = Node(2 * GRID, 2 * GRID)
+    node2 = Node(7 * GRID, 2 * GRID)
+    nodes = (
+        node1, node2
+    )
 
 
 def loop():
@@ -251,14 +274,17 @@ def loop():
         for wall in map:
             wall.render()
             pacman.collide(wall)
+        print(pacman.hit_wall)
         pacman.update()
+        for node in nodes:
+            node.render()
         pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        print(pacman.vel)
+        # print(pacman.vel)
 
 
 def main():
