@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 
 import pygame
@@ -36,6 +37,7 @@ class PacMan(object):
         self.speed = 3
         self.vel = Vector(0, 0)
         self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
+        self.next_vel = Vector(0, 0)
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -47,7 +49,8 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        self.pos += self.vel
+        self.pos.x += self.vel.x
+        self.pos.y += self.vel.y
 
         if self.pos.x < -self.width * 10:  # left tunnel
             self.pos.x = WIDTH
@@ -60,30 +63,41 @@ class PacMan(object):
     def change_dir(self, direction):
         if direction == "left":
             self.vel.x = -self.speed
+            self.next_vel.x = -self.speed
+            self.next_vel.y = 0
+
         elif direction == "right":
             self.vel.x = self.speed
+            self.next_vel.x = self.speed
+            self.next_vel.y = 0
+
         elif direction == "up":
             self.vel.y = -self.speed
+            self.next_vel.y = -self.speed
+            self.next_vel.x = 0
+
         elif direction == "down":
             self.vel.y = self.speed
+            self.next_vel.y = self.speed
+            self.next_vel.x = 0
 
     def collide(self, wall):
-        if self.pos.x <= wall.x + wall.width <= self.pos.x + 5:
+        if self.pos.x < wall.x + wall.width < self.pos.x + 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("left")
                 self.hit_wall["left"] = True
 
-        if self.pos.x + self.width >= wall.x >= self.pos.x - 5:
+        if self.pos.x + self.width > wall.x > self.pos.x - 5:
             if wall.y + wall.height > self.pos.y + 3 and wall.y < self.pos.y + self.width - 3:
                 self.stop("right")
                 self.hit_wall["right"] = True
 
-        if self.pos.y <= wall.y + wall.height <= self.pos.y + 5:
+        if self.pos.y < wall.y + wall.height < self.pos.y + 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("up")
                 self.hit_wall["up"] = True
 
-        if self.pos.y + self.width >= wall.y >= self.pos.y + self.width - 5:
+        if self.pos.y + self.width > wall.y > self.pos.y + self.width - 5:
             if self.pos.x + self.width - 3 > wall.x and self.pos.x + 3 < wall.x + wall.width:
                 self.stop("down")
                 self.hit_wall["down"] = True
@@ -91,19 +105,35 @@ class PacMan(object):
     def stop(self, side):
         if side == "left":
             self.vel.x = 0
-            pass
+            self.pos.x += self.speed
+            self.next_vel.y = 0
 
         elif side == "right":
             self.vel.x = 0
-            pass
+            self.pos.x -= self.speed
+            self.next_vel.y = 0
 
         elif side == "up":
             self.vel.y = 0
-            pass
+            self.pos.y += self.speed
+            self.next_vel.x = 0
 
         elif side == "down":
             self.vel.y = 0
-            pass
+            self.pos.y -= self.speed
+            self.next_vel.x = 0
+
+    def hit_node(self, node):
+        if self.pos.x - 3 + self.width//2 <= node.x <= self.pos.x + 3 + self.width//2:
+            if self.pos.y - 3 + self.width//2 <= node.y <= self.pos.y + 3 + self.width//2:
+                if self.vel.x != 0:
+                    if self.next_vel.y != 0:
+                        self.vel.y = deepcopy(self.next_vel.y)
+                        self.vel.x = 0
+                elif self.vel.y != 0:
+                    if self.next_vel.x != 0:
+                        self.vel.x = deepcopy(self.next_vel.x)
+                        self.vel.y = 0
 
     def eat(self):
         pass
@@ -246,8 +276,43 @@ def init():
     )
     node1 = Node(2 * GRID, 2 * GRID)
     node2 = Node(7 * GRID, 2 * GRID)
+    node3 = Node( * GRID,  * GRID)
+    node4 = Node(*GRID, *GRID)
+    node5 = Node(*GRID, *GRID)
+    node6 = Node(*GRID, *GRID)
+    node7 = Node(*GRID, *GRID)
+    node8 = Node(*GRID, *GRID)
+    node9 = Node(*GRID, *GRID)
+    node10 = Node(*GRID, *GRID)
+    node11 = Node(*GRID, *GRID)
+    node12 = Node(*GRID, *GRID)
+    node13 = Node(*GRID, *GRID)
+    node14 = Node(*GRID, *GRID)
+    node15 = Node(*GRID, *GRID)
+    node16 = Node(*GRID, *GRID)
+    node17 = Node(*GRID, *GRID)
+    node18 = Node(*GRID, *GRID)
+    node19 = Node(*GRID, *GRID)
+    node20 = Node(*GRID, *GRID)
+    node21 = Node(*GRID, *GRID)
+    node22 = Node(*GRID, *GRID)
+    node23 = Node(*GRID, *GRID)
+    node24 = Node(*GRID, *GRID)
+    node25 = Node(*GRID, *GRID)
+    node26 = Node(*GRID, *GRID)
+    node27 = Node(*GRID, *GRID)
+    node28 = Node(*GRID, *GRID)
+    node29 = Node(*GRID, *GRID)
+    node30 = Node(*GRID, *GRID)
+    node31 = Node(*GRID, *GRID)
+    node32 = Node(*GRID, *GRID)
+    node33 = Node(*GRID, *GRID)
     nodes = (
-        node1, node2
+        node1, node2, node3, node4, node5,
+        node6, node7, node8, node9, node10,
+        node11, node12, node13, node14, node15,
+        node16, node17, node18, node19, node20,
+        node21, node22, node23, node24, node25
     )
 
 
@@ -274,17 +339,18 @@ def loop():
         for wall in map:
             wall.render()
             pacman.collide(wall)
-        print(pacman.hit_wall)
+        # print(pacman.hit_wall)
         pacman.update()
         for node in nodes:
             node.render()
+            pacman.hit_node(node)
         pacman.render()
         show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
         # print(pacman.pos)
-        # print(pacman.vel)
+        print(pacman.vel)
 
 
 def main():
