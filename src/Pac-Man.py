@@ -38,6 +38,7 @@ class PacMan(object):
         self.vel = Vector(0, 0)
         self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
         self.next_vel = Vector(0, 0)
+        self.can_move = {"x": True, "y": True}
 
     def render(self):
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
@@ -49,13 +50,18 @@ class PacMan(object):
         pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
-        self.pos.x += self.vel.x
-        self.pos.y += self.vel.y
+        self.pos += self.vel
 
-        if self.pos.x < -self.width * 10:  # left tunnel
-            self.pos.x = WIDTH
-        elif self.pos.x > WIDTH + self.width * 9:  # right tunnel
-            self.pos.x = -self.width
+        if self.pos.x < 0:
+            self.can_move["y"] = False
+            if self.pos.x < -self.width * 10:  # left tunnel
+                self.pos.x = WIDTH
+        elif self.pos.x > WIDTH:
+            self.can_move["y"] = False
+            if self.pos.x > WIDTH + self.width * 9:  # right tunnel
+                self.pos.x = -self.width
+        else:
+            self.can_move["y"] = True
 
         for side in self.hit_wall:
             self.hit_wall[side] = False
@@ -65,21 +71,20 @@ class PacMan(object):
             self.vel.x = -self.speed
             self.next_vel.x = -self.speed
             self.next_vel.y = 0
-
         elif direction == "right":
             self.vel.x = self.speed
             self.next_vel.x = self.speed
             self.next_vel.y = 0
 
-        elif direction == "up":
-            self.vel.y = -self.speed
-            self.next_vel.y = -self.speed
-            self.next_vel.x = 0
-
-        elif direction == "down":
-            self.vel.y = self.speed
-            self.next_vel.y = self.speed
-            self.next_vel.x = 0
+        if self.can_move["y"]:
+            if direction == "up":
+                self.vel.y = -self.speed
+                self.next_vel.y = -self.speed
+                self.next_vel.x = 0
+            elif direction == "down":
+                self.vel.y = self.speed
+                self.next_vel.y = self.speed
+                self.next_vel.x = 0
 
     def collide(self, wall):
         if self.pos.x < wall.x + wall.width < self.pos.x + 5:
@@ -276,43 +281,82 @@ def init():
     )
     node1 = Node(2 * GRID, 2 * GRID)
     node2 = Node(7 * GRID, 2 * GRID)
-    node3 = Node( * GRID,  * GRID)
-    node4 = Node(*GRID, *GRID)
-    node5 = Node(*GRID, *GRID)
-    node6 = Node(*GRID, *GRID)
-    node7 = Node(*GRID, *GRID)
-    node8 = Node(*GRID, *GRID)
-    node9 = Node(*GRID, *GRID)
-    node10 = Node(*GRID, *GRID)
-    node11 = Node(*GRID, *GRID)
-    node12 = Node(*GRID, *GRID)
-    node13 = Node(*GRID, *GRID)
-    node14 = Node(*GRID, *GRID)
-    node15 = Node(*GRID, *GRID)
-    node16 = Node(*GRID, *GRID)
-    node17 = Node(*GRID, *GRID)
-    node18 = Node(*GRID, *GRID)
-    node19 = Node(*GRID, *GRID)
-    node20 = Node(*GRID, *GRID)
-    node21 = Node(*GRID, *GRID)
-    node22 = Node(*GRID, *GRID)
-    node23 = Node(*GRID, *GRID)
-    node24 = Node(*GRID, *GRID)
-    node25 = Node(*GRID, *GRID)
-    node26 = Node(*GRID, *GRID)
-    node27 = Node(*GRID, *GRID)
-    node28 = Node(*GRID, *GRID)
-    node29 = Node(*GRID, *GRID)
-    node30 = Node(*GRID, *GRID)
-    node31 = Node(*GRID, *GRID)
-    node32 = Node(*GRID, *GRID)
-    node33 = Node(*GRID, *GRID)
+    node3 = Node(13 * GRID, 2 * GRID)
+    node4 = Node(16*GRID, 2*GRID)
+    node5 = Node(22*GRID, 2*GRID)
+    node6 = Node(27*GRID, 2*GRID)
+    node7 = Node(2*GRID, 6*GRID)
+    node8 = Node(7*GRID, 6*GRID)
+    node9 = Node(10*GRID, 6*GRID)
+    node10 = Node(13*GRID, 6*GRID)
+    node11 = Node(16*GRID, 6*GRID)
+    node12 = Node(19*GRID, 6*GRID)
+    node13 = Node(22*GRID, 6*GRID)
+    node14 = Node(27*GRID, 6*GRID)
+    node15 = Node(2*GRID, 9*GRID)
+    node16 = Node(7*GRID, 9*GRID)
+    node17 = Node(10 * GRID, 9 * GRID)
+    node18 = Node(13*GRID, 9*GRID)
+    node19 = Node(16*GRID, 9*GRID)
+    node20 = Node(19*GRID, 9*GRID)
+    node21 = Node(22*GRID, 9*GRID)
+    node22 = Node(27*GRID, 9*GRID)
+    node23 = Node(10*GRID, 12*GRID)
+    node24 = Node(13*GRID, 12*GRID)
+    node25 = Node(16*GRID, 12*GRID)
+    node26 = Node(19*GRID, 12*GRID)
+    node27 = Node(7*GRID, 15*GRID)
+    node28 = Node(10*GRID, 15*GRID)
+    node29 = Node(19*GRID, 15*GRID)
+    node30 = Node(22*GRID, 15*GRID)
+    node31 = Node(10*GRID, 18*GRID)
+    node32 = Node(19*GRID, 18*GRID)
+    node33 = Node(2*GRID, 21*GRID)
+    node34 = Node(7*GRID, 21*GRID)
+    node35 = Node(10*GRID, 21*GRID)
+    node36 = Node(13*GRID, 21*GRID)
+    node37 = Node(16*GRID, 21*GRID)
+    node38 = Node(19*GRID, 21*GRID)
+    node39 = Node(22*GRID, 21*GRID)
+    node40 = Node(27*GRID, 21*GRID)
+    node41 = Node(2*GRID, 24*GRID)
+    node42 = Node(4*GRID, 24*GRID)
+    node43 = Node(7*GRID, 24*GRID)
+    node44 = Node(10*GRID, 24*GRID)
+    node45 = Node(13*GRID, 24*GRID)
+    node46 = Node(16*GRID, 24*GRID)
+    node47 = Node(19*GRID, 24*GRID)
+    node48 = Node(22*GRID, 24*GRID)
+    node49 = Node(25*GRID, 24*GRID)
+    node50 = Node(27*GRID, 24*GRID)
+    node51 = Node(2*GRID, 27*GRID)
+    node52 = Node(4*GRID, 27*GRID)
+    node53 = Node(7*GRID, 27*GRID)
+    node54 = Node(10*GRID, 27*GRID)
+    node55 = Node(13*GRID, 27*GRID)
+    node56 = Node(16*GRID, 27*GRID)
+    node57 = Node(19*GRID, 27*GRID)
+    node58 = Node(22*GRID, 27*GRID)
+    node59 = Node(25*GRID, 27*GRID)
+    node60 = Node(27*GRID, 27*GRID)
+    node61 = Node(2*GRID, 30*GRID)
+    node62 = Node(13 * GRID, 30 * GRID)
+    node63 = Node(16 * GRID, 30 * GRID)
+    node64 = Node(27*GRID, 30*GRID)
     nodes = (
         node1, node2, node3, node4, node5,
         node6, node7, node8, node9, node10,
         node11, node12, node13, node14, node15,
         node16, node17, node18, node19, node20,
-        node21, node22, node23, node24, node25
+        node21, node22, node23, node24, node25,
+        node26, node27, node28, node29, node30,
+        node31, node32, node33, node34, node35,
+        node36, node37, node38, node39, node40,
+        node41, node42, node43, node44, node45,
+        node46, node47, node48, node49, node50,
+        node51, node52, node53, node54, node55,
+        node56, node57, node58, node59, node60,
+        node61, node62, node63, node64
     )
 
 
@@ -349,8 +393,8 @@ def loop():
         show_fps()
         pygame.display.flip()
         clock.tick(30)
-        # print(pacman.pos)
-        print(pacman.vel)
+        print(pacman.pos)
+        # print(pacman.vel)
 
 
 def main():
