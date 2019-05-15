@@ -1,5 +1,5 @@
-from copy import deepcopy
 import os
+from copy import deepcopy
 
 import pygame
 from vectormath import Vector2 as Vector
@@ -145,6 +145,14 @@ class PacMan(object):
 
 
 class Ghost(object):
+    pass
+
+
+class Dot(object):
+    pass
+
+
+class Power(Dot):
     pass
 
 
@@ -344,18 +352,12 @@ def init():
     node63 = Node(16 * GRID, 30 * GRID)
     node64 = Node(27*GRID, 30*GRID)
     nodes = (
-        node1, node2, node3, node4, node5,
-        node6, node7, node8, node9, node10,
-        node11, node12, node13, node14, node15,
-        node16, node17, node18, node19, node20,
-        node21, node22, node23, node24, node25,
-        node26, node27, node28, node29, node30,
-        node31, node32, node33, node34, node35,
-        node36, node37, node38, node39, node40,
-        node41, node42, node43, node44, node45,
-        node46, node47, node48, node49, node50,
-        node51, node52, node53, node54, node55,
-        node56, node57, node58, node59, node60,
+        node1, node2, node3, node4, node5, node6, node7, node8, node9, node10,
+        node11, node12, node13, node14, node15, node16, node17, node18, node19, node20,
+        node21, node22, node23, node24, node25, node26, node27, node28, node29, node30,
+        node31, node32, node33, node34, node35, node36, node37, node38, node39, node40,
+        node41, node42, node43, node44, node45, node46, node47, node48, node49, node50,
+        node51, node52, node53, node54, node55, node56, node57, node58, node59, node60,
         node61, node62, node63, node64
     )
 
