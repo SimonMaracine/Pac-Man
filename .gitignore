@@ -1,2 +1,3 @@
-# Ignoring those xmls
+# Ignoring some stuff
 *.xml
+src/__pycache__/

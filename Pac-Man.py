@@ -16,6 +16,11 @@ class Wall(object):
         self.y = y
         self.width = width
         self.height = height
+        self.shallow_area = []
+
+        for x in range(self.x, self.x + self.width + 1, GRID):
+            for y in range(self.y, self.y + self.height + 1, GRID):
+                self.shallow_area.append((x, y))
 
     def render(self):
         pygame.draw.rect(window, (0, 0, 200), (self.x, self.y, self.width, self.height), 4)
@@ -41,13 +46,14 @@ class PacMan(object):
         self.can_move = {"x": True, "y": True}
 
     def render(self):
-        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 2, self.pos.y + 2, self.width - 4, self.width - 4))
-        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
+        pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
+        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
 
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
-        pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
+        # draw hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
+        # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
     def update(self):
         self.pos += self.vel
@@ -140,8 +146,14 @@ class PacMan(object):
                         self.vel.x = deepcopy(self.next_vel.x)
                         self.vel.y = 0
 
-    def eat(self):
-        pass
+    def eat(self, dots):
+        global score
+        for i in range(len(dots)):
+            if dots[i].x - self.speed * 2 < self.pos.x + self.width//2 < dots[i].x + self.speed * 2 and \
+                    dots[i].y - self.speed * 2 < self.pos.y + self.width//2 < dots[i].y + self.speed * 2:
+                score += Dot.points
+                del dots[i]
+                break
 
 
 class Ghost(object):
@@ -149,7 +161,16 @@ class Ghost(object):
 
 
 class Dot(object):
-    pass
+    points = 10
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.width = 5
+        self.color = (255, 240, 100)
+
+    def render(self):
+        pygame.draw.rect(window, self.color, (self.x - self.width//2, self.y - self.width//2, self.width, self.width))
 
 
 class Power(Dot):
@@ -169,7 +190,7 @@ def show_grid():
 
 
 def init():
-    global window, clock, fps_font, map, nodes
+    global window, clock, fps_font, walls, nodes, dots, score
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     pygame.init()
     window = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -231,7 +252,7 @@ def init():
     v4_down_wall = Wall(WIDTH - 9 * GRID, HEIGHT - 7 * GRID, GRID, 4 * GRID)
     left_weird_wall = Wall(0, HEIGHT - 7 * GRID, 3 * GRID, GRID)
     right_weird_wall = Wall(WIDTH - 3 * GRID, HEIGHT - 7 * GRID, 3 * GRID, GRID)
-    map = (
+    walls = (
         top_wall,
         bottom_wall,
         left_top_wall,
@@ -361,6 +382,26 @@ def init():
         node61, node62, node63, node64
     )
 
+    where_dots_cant_be = []
+    for x in range(0, 6 * GRID + 1, GRID):
+        for y in range(10 * GRID, 20 * GRID + 1, GRID):
+            where_dots_cant_be.append((x, y))
+    for x in range(23 * GRID, WIDTH + 1, GRID):
+        for y in range(10 * GRID, 20 * GRID + 1, GRID):
+            where_dots_cant_be.append((x, y))
+    for x in range(8 * GRID, 21 * GRID + 1, GRID):
+        for y in range(10 * GRID, 20 * GRID + 1, GRID):
+            where_dots_cant_be.append((x, y))
+
+    dots = []
+    for x in range(GRID * 2, WIDTH - GRID, GRID):
+        for y in range(GRID * 2, HEIGHT - GRID, GRID):
+            if all(list(map(lambda wall: (x, y) not in wall.shallow_area and (x, y) not in where_dots_cant_be, walls))):
+                dot = Dot(x, y)
+                dots.append(dot)
+
+    score = 0
+
 
 def loop():
     global window, clock, running
@@ -382,16 +423,19 @@ def loop():
                     pacman.change_dir("down")
 
         window.fill((0, 0, 0))
-        for wall in map:
+        for wall in walls:
             wall.render()
             pacman.collide(wall)
         # print(pacman.hit_wall)
         pacman.update()
         for node in nodes:
-            node.render()
+            # node.render()
             pacman.hit_node(node)
+        pacman.eat(dots)
+        for dot in dots:
+            dot.render()
         pacman.render()
-        show_grid()
+        # show_grid()
         show_fps()
         pygame.display.flip()
         clock.tick(30)
