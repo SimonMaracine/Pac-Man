@@ -89,17 +89,14 @@ class PacMan(object):
             self.vel.x = 0
             self.pos.x += self.speed
             self.next_vel.y = 0
-
         elif side == "right":
             self.vel.x = 0
             self.pos.x -= self.speed
             self.next_vel.y = 0
-
         elif side == "up":
             self.vel.y = 0
             self.pos.y += self.speed
             self.next_vel.x = 0
-
         elif side == "down":
             self.vel.y = 0
             self.pos.y -= self.speed
@@ -117,7 +114,7 @@ class PacMan(object):
                         self.vel.x = deepcopy(self.next_vel.x)
                         self.vel.y = 0
 
-    def eat(self, dots, score):
+    def eat(self, dots, score) -> int:
         for i in range(len(dots)):
             if dots[i].x - self.speed * 2 < self.pos.x + self.width//2 < dots[i].x + self.speed * 2 and \
                     dots[i].y - self.speed * 2 < self.pos.y + self.width//2 < dots[i].y + self.speed * 2:

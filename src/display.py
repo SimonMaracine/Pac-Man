@@ -15,7 +15,7 @@ def set_size(grid, width: int, height: int):
     HEIGHT = height * GRID
 
 
-def set_window(width, height):
+def set_window(width, height) -> pygame.Surface:
     window = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pac-Man")
     return window

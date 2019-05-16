@@ -17,7 +17,7 @@ class Wall(object):
         pygame.draw.rect(surface, (0, 0, 200), (self.x, self.y, self.width, self.height), 4)
 
 
-def make_walls():
+def make_walls() -> tuple:
     top_wall = Wall(0, 0, d.WIDTH, d.GRID)
     bottom_wall = Wall(0, 31 * d.GRID, d.WIDTH, d.GRID)
     left_top_wall = Wall(0, 0, d.GRID, 11 * d.GRID)

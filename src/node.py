@@ -11,7 +11,7 @@ class Node(object):
         pygame.draw.circle(surface, (0, 0, 255), (self.x, self.y), 8)
 
 
-def make_nodes():
+def make_nodes() -> tuple:
     node1 = Node(2 * d.GRID, 2 * d.GRID)
     node2 = Node(7 * d.GRID, 2 * d.GRID)
     node3 = Node(13 * d.GRID, 2 * d.GRID)

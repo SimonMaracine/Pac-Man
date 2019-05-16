@@ -15,7 +15,7 @@ class Dot(object):
         pygame.draw.rect(surface, self.color, (self.x - self.width//2, self.y - self.width//2, self.width, self.width))
 
 
-def make_dots(walls):
+def make_dots(walls) -> list:
     where_dots_cant_be = []
     for x in range(0, 6 * d.GRID + 1, d.GRID):
         for y in range(10 * d.GRID, 20 * d.GRID + 1, d.GRID):

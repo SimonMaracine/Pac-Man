@@ -13,8 +13,8 @@ score_font = pygame.font.SysFont("calibri", 22, True)
 score = 0
 
 
-def show_score(surface, font, score):
-    score_text = font.render("HIGH SCORE: " + str(score), True, (255, 255, 255))
+def show_score(surface, font, scr):
+    score_text = font.render("HIGH SCORE: " + str(scr), True, (255, 255, 255))
     surface.blit(score_text, (d.WIDTH // 2 - score_text.get_width() // 2, 4))
 
 
@@ -61,8 +61,7 @@ def main():
         show_fps(window, clock, fps_font)
         pygame.display.flip()
         clock.tick(30)
-        # print(pacman.pos)
+        print(pacman.pos)
         # print(pacman.vel)
-        print(score)
 
     pygame.quit()
