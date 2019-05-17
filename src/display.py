@@ -40,5 +40,5 @@ def show_fps(surface, clock, font):
 def show_grid(surface):
     for i in range(29):
         pygame.draw.line(surface, (255, 255, 255), (i * GRID, 0), (i * GRID, HEIGHT), 1)
-    for j in range(32):
+    for j in range(36):
         pygame.draw.line(surface, (255, 255, 255), (0, j * GRID), (WIDTH, j * GRID), 1)

@@ -20,7 +20,7 @@ class PacMan(object):
         pygame.draw.ellipse(surface, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
         # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
 
-        # draw hitbox
+        # draw the hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + self.width - 5, self.pos.y + 3, 5, self.width - 6), 1)  # right hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
@@ -31,11 +31,11 @@ class PacMan(object):
 
         if self.pos.x < 0:
             self.can_move["y"] = False
-            if self.pos.x < -self.width * 10:  # left tunnel
+            if self.pos.x < -self.width * 3:  # left tunnel
                 self.pos.x = d.WIDTH
         elif self.pos.x > d.WIDTH:
             self.can_move["y"] = False
-            if self.pos.x > d.WIDTH + self.width * 9:  # right tunnel
+            if self.pos.x > d.WIDTH + self.width * 2:  # right tunnel
                 self.pos.x = -self.width
         else:
             self.can_move["y"] = True
@@ -118,7 +118,7 @@ class PacMan(object):
         for i in range(len(dots)):
             if dots[i].x - self.speed * 2 < self.pos.x + self.width//2 < dots[i].x + self.speed * 2 and \
                     dots[i].y - self.speed * 2 < self.pos.y + self.width//2 < dots[i].y + self.speed * 2:
-                score += Dot.points
+                score += dots[i].points
                 del dots[i]
                 break
         return score

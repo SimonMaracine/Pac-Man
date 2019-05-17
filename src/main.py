@@ -6,8 +6,9 @@ from src.pacman import PacMan
 from src.wall import make_walls
 from src.node import make_nodes
 from src.dot import make_dots
+from src.power import make_powers
 
-set_size(18, 29, 36)  # 18, 29, 32
+set_size(18, 29, 36)  # 18 (24), 29, 32
 window, fullscreen = set_window(d.WIDTH, d.HEIGHT, False)
 clock = pygame.time.Clock()
 fps_font = pygame.font.SysFont("calibri", 16, True)
@@ -37,14 +38,14 @@ def revive():
     if lives < 1:
         score = 0
         lives = 3
-        init_objects(True, False, False, True)
+        init_objects(True, False, False, True, True)
     else:
-        init_objects(True, False, False, False)
+        init_objects(True, False, False, False, False)
 
 
-def init_objects(p=True, w=True, n=True, d=True):
-    global pacman, walls, nodes, dots
-    if p:
+def init_objects(pm=True, w=True, n=True, d=True, p=True):
+    global pacman, walls, nodes, dots, powers
+    if pm:
         pacman = PacMan()
     if w:
         walls = make_walls()
@@ -52,7 +53,9 @@ def init_objects(p=True, w=True, n=True, d=True):
         nodes = make_nodes()
     if d:
         dots = make_dots(walls)
-        assert len(dots) == 246, "There have to be 246 dots."
+        assert len(dots) == 242, "There have to be 242 dots, not " + str(len(dots))
+    if p:
+        powers = make_powers()
 
 
 def main():
@@ -91,17 +94,20 @@ def main():
             # node.render(window)
             pacman.hit_node(node)
         score = pacman.eat(dots, score)
+        score = pacman.eat(powers, score)
         if not dots:
             pygame.time.wait(1000)
-            init_objects(True, False, False, True)
+            init_objects(True, False, False, True, True)
         for dot in dots:
             dot.render(window)
+        for power in powers:
+            power.render(window)
         pacman.render(window)
         show_score(window, score_font, score)
         show_lives(window, score_font, lives)
         # show_grid(window)
         show_fps(window, clock, fps_font)
         pygame.display.flip()
-        clock.tick(300)
+        clock.tick(30)
         print(pacman.pos)
         # print(pacman.vel)
