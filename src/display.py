@@ -15,10 +15,21 @@ def set_size(grid, width: int, height: int):
     HEIGHT = height * GRID
 
 
-def set_window(width, height) -> pygame.Surface:
-    window = pygame.display.set_mode((width, height))
+def set_window(width, height, fullscreen=False) -> tuple:
+    if fullscreen:
+        window = pygame.display.set_mode((width, height), pygame.FULLSCREEN)
+    else:
+        window = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Pac-Man")
-    return window
+    return window, fullscreen
+
+
+def switch_fullscreen(fullscreen) -> tuple:
+    if not fullscreen:
+        window = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+    else:
+        window = pygame.display.set_mode((WIDTH, HEIGHT))
+    return window, not fullscreen
 
 
 def show_fps(surface, clock, font):
