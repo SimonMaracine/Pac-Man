@@ -7,6 +7,7 @@ from src.wall import make_walls
 from src.node import make_nodes
 from src.dot import make_dots
 from src.power import make_powers
+from src.ghost import Ghost
 
 set_size(18, 29, 36)  # 18 (24), 29, 32
 window, fullscreen = set_window(d.WIDTH, d.HEIGHT, False)
@@ -61,6 +62,7 @@ def init_objects(pm=True, w=True, n=True, d=True, p=True):
 def main():
     global window, score, fullscreen, lives
     init_objects()
+    blinky = Ghost(3 * d.GRID, 3 * d.GRID)
 
     while True:
         for event in pygame.event.get():
@@ -84,30 +86,35 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     pacman.change_dir("down")
 
-        window.fill((0, 0, 0))
+        window.fill((2, 2, 2))
         for wall in walls:
             wall.render(window)
             pacman.collide(wall)
         # print(pacman.hit_wall)
         pacman.update()
+        blinky.update(pacman)
+        blinky.catch_pacman(nodes)
+        if blinky.eat_pacman():
+            revive()
         for node in nodes:
-            # node.render(window)
+            node.render(window)
             pacman.hit_node(node)
         score = pacman.eat(dots, score)
         score = pacman.eat(powers, score)
         if not dots:
             pygame.time.wait(1000)
             init_objects(True, False, False, True, True)
-        for dot in dots:
-            dot.render(window)
-        for power in powers:
-            power.render(window)
+        # for dot in dots:
+            # dot.render(window)
+        # for power in powers:
+        #     power.render(window)
         pacman.render(window)
-        show_score(window, score_font, score)
+        blinky.render(window)
+        # show_score(window, score_font, score)
         show_lives(window, score_font, lives)
         # show_grid(window)
         show_fps(window, clock, fps_font)
         pygame.display.flip()
         clock.tick(30)
-        print(pacman.pos)
+        # print(pacman.pos)
         # print(pacman.vel)

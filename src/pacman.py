@@ -1,15 +1,14 @@
 from copy import deepcopy
+from math import sqrt
 import pygame
 from vectormath import Vector2 as Vector
-
 import src.display as d
-from src.dot import Dot
 
 
 class PacMan(object):
     def __init__(self):
         self.pos = Vector(14 * d.GRID - d.GRID // 2, 25 * d.GRID)
-        self.width = d.GRID * 2
+        self.width = 2 * d.GRID
         self.speed = 3
         self.vel = Vector(0, 0)
         self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
@@ -106,11 +105,11 @@ class PacMan(object):
         if self.pos.x - 3 + self.width//2 <= node.x <= self.pos.x + 3 + self.width//2:
             if self.pos.y - 3 + self.width//2 <= node.y <= self.pos.y + 3 + self.width//2:
                 if self.vel.x != 0:
-                    if self.next_vel.y != 0:
-                        self.vel.y = deepcopy(self.next_vel.y)
+                    if self.next_vel.y > 0 and "d" in node.neighbors or self.next_vel.y < 0 and "u" in node.neighbors:
+                        self.vel.y = deepcopy(self.next_vel.y) # todo deepcopy might not be needed
                         self.vel.x = 0
-                elif self.vel.y != 0:
-                    if self.next_vel.x != 0:
+                elif self.vel.y != 0:  # todo node 27 and 30 need "l" and "r" respectively
+                    if self.next_vel.x > 0 and "r" in node.neighbors or self.next_vel.x < 0 and "l" in node.neighbors:
                         self.vel.x = deepcopy(self.next_vel.x)
                         self.vel.y = 0
 
