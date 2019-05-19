@@ -1,5 +1,5 @@
 from math import sqrt
-from node import Node
+from src.node import Node
 
 
 def find_node_min_f(nodes) -> Node:

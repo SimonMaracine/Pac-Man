@@ -2,8 +2,8 @@ from math import sqrt
 import pygame
 from vectormath import Vector2 as Vector
 import src.display as d
-from node import Node
-from a_star import a_star
+from src.node import Node
+from src.a_star import a_star
 
 
 class Ghost(object):
