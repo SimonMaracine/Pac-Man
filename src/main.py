@@ -63,6 +63,8 @@ def main():
     global window, score, fullscreen, lives
     init_objects()
     blinky = Ghost(3 * d.GRID, 3 * d.GRID)
+    g = False  # temporary
+    n = False  # temporary
 
     while True:
         for event in pygame.event.get():
@@ -74,8 +76,12 @@ def main():
                 elif event.key == pygame.K_f:
                     window, fullscreen = switch_fullscreen(fullscreen)
                 elif event.key == pygame.K_r:
-                    pygame.time.wait(1000)
+                    # pygame.time.wait(1000)
                     revive()
+                elif event.key == pygame.K_g: # temporary
+                    g = not g
+                elif event.key == pygame.K_n: # temporary
+                    n = not n
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     pacman.change_dir("left")
@@ -97,22 +103,24 @@ def main():
         if blinky.eat_pacman():
             revive()
         for node in nodes:
-            node.render(window)
+            if n:  # temporary
+                node.render(window)
             pacman.hit_node(node)
         score = pacman.eat(dots, score)
         score = pacman.eat(powers, score)
         if not dots:
             pygame.time.wait(1000)
             init_objects(True, False, False, True, True)
-        # for dot in dots:
-            # dot.render(window)
-        # for power in powers:
-        #     power.render(window)
+        for dot in dots:
+            dot.render(window)
+        for power in powers:
+            power.render(window)
         pacman.render(window)
         blinky.render(window)
-        # show_score(window, score_font, score)
+        show_score(window, score_font, score)
         show_lives(window, score_font, lives)
-        # show_grid(window)
+        if g:  # temporary
+            show_grid(window)
         show_fps(window, clock, fps_font)
         pygame.display.flip()
         clock.tick(30)
