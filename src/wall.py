@@ -9,12 +9,14 @@ class Wall(object):
         self.width = width
         self.height = height
         self.shallow_area = []
-        for x in range(self.x, self.x + self.width + 1, d.GRID):
-            for y in range(self.y, self.y + self.height + 1, d.GRID):
-                self.shallow_area.append((x, y))
 
     def render(self, surface):
         pygame.draw.rect(surface, (0, 0, 200), (self.x, self.y, self.width, self.height), 4)
+
+    def def_shallow_area(self):
+        for x in range(self.x, self.x + self.width + 1, d.GRID):
+            for y in range(self.y, self.y + self.height + 1, d.GRID):
+                self.shallow_area.append((x, y))
 
 
 def make_walls() -> tuple:
@@ -131,4 +133,5 @@ def make_walls() -> tuple:
     )
     for wall in walls:
         wall.y += 2 * d.GRID
+        wall.def_shallow_area()
     return walls

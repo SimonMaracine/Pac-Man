@@ -1,8 +1,8 @@
 from copy import deepcopy
-from math import sqrt
 import pygame
 from vectormath import Vector2 as Vector
 import src.display as d
+from node import MobileNode
 
 
 class PacMan(object):
@@ -14,10 +14,10 @@ class PacMan(object):
         self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
         self.next_vel = Vector(0, 0)
         self.can_move = {"x": True, "y": True}
+        self.node = MobileNode(self.pos.x + d.GRID, self.pos.y + d.GRID)
 
     def render(self, surface):
         pygame.draw.ellipse(surface, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
-        # pygame.draw.ellipse(window, (255, 255, 0), (self.pos.x, self.pos.y, self.width, self.width))
 
         # draw the hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x, self.pos.y + 3, 5, self.width - 6), 1)  # left hitbox
@@ -27,6 +27,8 @@ class PacMan(object):
 
     def update(self):
         self.pos += self.vel
+        self.node.x = self.pos.x + d.GRID
+        self.node.y = self.pos.y + d.GRID
 
         if self.pos.x < 0:
             self.can_move["y"] = False

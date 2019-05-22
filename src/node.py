@@ -18,52 +18,92 @@ class Node(object):
     def render(self, surface):
         pygame.draw.circle(surface, (0, 0, 255), (self.x, self.y), 8)
 
-    def find_neighbors(self, nodes: tuple):
-        for dir in self.neighbor_dirs:
+    def find_neighbors(self, nodes: tuple, dirs: tuple):
+        if not dirs:
+            dirs = self.neighbor_dirs
+
+        for dir in dirs:
             if dir == "u":
                 y = self.y
                 found_neighbor = False
+                c = 0
                 while not found_neighbor:
+                    c += 1
+                    if c > 11:
+                        break
                     y -= d.GRID
                     for node in nodes:
                         if node.x == self.x and node.y < self.y:
-                            if y == node.y:
+                            if y - d.GRID <= node.y <= y + d.GRID:
                                 self.neighbors["u"] = node
                                 found_neighbor = True
                                 break
             elif dir == "l":
                 x = self.x
                 found_neighbor = False
+                c = 0
                 while not found_neighbor:
+                    c += 1
+                    if c > 11:
+                        break
                     x -= d.GRID
                     for node in nodes:
                         if node.y == self.y and node.x < self.x:
-                            if x == node.x:
+                            if x - d.GRID <= node.x <= x + d.GRID:
                                 self.neighbors["l"] = node
                                 found_neighbor = True
                                 break
             elif dir == "d":
                 y = self.y
                 found_neighbor = False
+                c = 0
                 while not found_neighbor:
+                    c += 1
+                    if c > 11:
+                        break
                     y += d.GRID
                     for node in nodes:
                         if node.x == self.x and node.y > self.y:
-                            if y == node.y:
+                            if y - d.GRID <= node.y <= y + d.GRID:
                                 self.neighbors["d"] = node
                                 found_neighbor = True
                                 break
             elif dir == "r":
                 x = self.x
                 found_neighbor = False
+                c = 0
                 while not found_neighbor:
+                    c += 1
+                    if c > 11:
+                        break
                     x += d.GRID
                     for node in nodes:
                         if node.y == self.y and node.x > self.x:
-                            if x == node.x:
+                            if x - d.GRID <= node.x <= x + d.GRID:
                                 self.neighbors["r"] = node
                                 found_neighbor = True
                                 break
+
+
+class MobileNode(Node):
+    def __init__(self, x, y):
+        super().__init__(x, y, ())
+
+    def find_neighbors2(self, nodes: tuple, entity_vel):
+        if entity_vel.x != 0:
+            print("search x")
+            super().find_neighbors(nodes, ("l", "r"))
+            for node in nodes:
+                if self.x == node.x and self.y == node.y:
+                    dirs = node.neighbor_dirs
+                    super().find_neighbors(nodes, dirs)
+        elif entity_vel.y != 0:
+            print("search y")
+            super().find_neighbors(nodes, ("u", "d"))
+            for node in nodes:
+                if self.x == node.x and self.y == node.y:
+                    dirs = node.neighbor_dirs
+                    super().find_neighbors(nodes, dirs)
 
 
 def make_nodes() -> tuple:
@@ -141,8 +181,8 @@ def make_nodes() -> tuple:
         node61, node62, node63, node64
     )
     for node in nodes:
-        node.find_neighbors(nodes)
-        print(node.neighbors)
+        node.find_neighbors(nodes, ())
+        # print(node.neighbors)
     for node in nodes:
         node.y += 2 * d.GRID
     return nodes
