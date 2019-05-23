@@ -39,30 +39,33 @@ def revive():
     if lives < 1:
         score = 0
         lives = 3
-        init_objects(True, False, False, True, True)
+        init_objects(w=False, n=False)
     else:
-        init_objects(True, False, False, False, False)
+        init_objects(w=False, n=False, ds=False, p=False)
 
 
-def init_objects(pm=True, w=True, n=True, d=True, p=True):
-    global pacman, walls, nodes, dots, powers
+def init_objects(pm=True, w=True, n=True, ds=True, p=True, g=True):
+    global pacman, walls, nodes, dots, powers, blinky
     if pm:
         pacman = PacMan()
     if w:
         walls = make_walls()
     if n:
         nodes = make_nodes()
-    if d:
+    if ds:
         dots = make_dots(walls)
         assert len(dots) == 242, "There have to be 242 dots, not " + str(len(dots))
     if p:
         powers = make_powers()
+    if g:
+        blinky = Ghost(13 * d.GRID + d.GRID//2, 13 * d.GRID)
 
 
 def main():
     global window, score, fullscreen, lives
     init_objects()
-    blinky = Ghost(3 * d.GRID, 3 * d.GRID)
+    revive_ = False
+
     g = False  # temporary
     n = False  # temporary
 
@@ -77,7 +80,7 @@ def main():
                     window, fullscreen = switch_fullscreen(fullscreen)
                 elif event.key == pygame.K_r:
                     # pygame.time.wait(1000)
-                    revive()
+                    revive_ = True
                 elif event.key == pygame.K_g: # temporary
                     g = not g
                 elif event.key == pygame.K_n: # temporary
@@ -92,25 +95,30 @@ def main():
                 elif event.key == pygame.K_DOWN:
                     pacman.change_dir("down")
 
+        if revive_:
+            revive()
+            revive_ = False
         window.fill((2, 2, 2))
+        pacman.update(nodes)
         for wall in walls:
             wall.render(window)
             pacman.collide(wall)
         # print(pacman.hit_wall)
-        pacman.update()
+
         blinky.update(pacman)
-        blinky.catch_pacman(nodes)
+        # blinky.chase_pacman(nodes)
         if blinky.eat_pacman():
-            revive()
+            revive_ = True
         for node in nodes:
             if n:  # temporary
                 node.render(window)
             pacman.hit_node(node)
+            node.neighbors["pacman"] = None
         score = pacman.eat(dots, score)
         score = pacman.eat(powers, score)
         if not dots:
             pygame.time.wait(1000)
-            init_objects(True, False, False, True, True)
+            init_objects(w=False, n=False)
         for dot in dots:
             dot.render(window)
         for power in powers:
@@ -123,6 +131,4 @@ def main():
             show_grid(window)
         show_fps(window, clock, fps_font)
         pygame.display.flip()
-        clock.tick(30)
-        # print(pacman.pos)
-        # print(pacman.vel)
+        clock.tick(1)

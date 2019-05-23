@@ -10,11 +10,12 @@ class PacMan(object):
         self.pos = Vector(14 * d.GRID - d.GRID // 2, 25 * d.GRID)
         self.width = 2 * d.GRID
         self.speed = 3
-        self.vel = Vector(0, 0)
+        self.vel = Vector(-self.speed, 0)
         self.hit_wall = {"left": False, "right": False, "up": False, "down": False}
         self.next_vel = Vector(0, 0)
         self.can_move = {"x": True, "y": True}
         self.node = MobileNode(self.pos.x + d.GRID, self.pos.y + d.GRID)
+        self.dir = Vector(-self.speed, 0)
 
     def render(self, surface):
         pygame.draw.ellipse(surface, (255, 255, 0), (self.pos.x + 3, self.pos.y + 3, self.width - 6, self.width - 6))
@@ -25,7 +26,7 @@ class PacMan(object):
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
-    def update(self):
+    def update(self, nodes):
         self.pos += self.vel
         self.node.x = self.pos.x + d.GRID
         self.node.y = self.pos.y + d.GRID
@@ -44,6 +45,24 @@ class PacMan(object):
         for side in self.hit_wall:
             self.hit_wall[side] = False
 
+        if self.vel.x == 0 and self.vel.y != 0:
+            self.dir.y = self.vel.y
+            self.dir.x = 0
+        elif self.vel.y == 0 and self.vel.x != 0:
+            self.dir.x = self.vel.x
+            self.dir.y = 0
+
+        # print(self.dir)
+        print(self.vel)
+        print(self.pos)
+
+        self.node.find_neighbors2(nodes, self.dir)
+        # print(self.node.neighbors)
+        # assert self.node.neighbors, "Could not find neighbors. Last dir: " + str(self.dir)
+        for node in self.node.neighbors.values():
+            node.neighbors["pacman"] = self.node
+        self.node.neighbors.clear()
+
     def change_dir(self, direction):
         if direction == "left":
             self.vel.x = -self.speed
@@ -60,6 +79,9 @@ class PacMan(object):
                 self.next_vel.y = -self.speed
                 self.next_vel.x = 0
             elif direction == "down":
+                print(self.dir)
+                if self.dir.x != 0:
+                    self.pos.y -= self.speed
                 self.vel.y = self.speed
                 self.next_vel.y = self.speed
                 self.next_vel.x = 0
@@ -100,7 +122,7 @@ class PacMan(object):
             self.next_vel.x = 0
         elif side == "down":
             self.vel.y = 0
-            self.pos.y -= self.speed
+            # self.pos.y -= self.speed
             self.next_vel.x = 0
 
     def hit_node(self, node):

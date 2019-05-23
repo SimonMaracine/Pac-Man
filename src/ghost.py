@@ -4,7 +4,6 @@ from vectormath import Vector2 as Vector
 import src.display as d
 from src.node import Node, MobileNode
 from src.a_star import a_star
-import time
 
 
 class Ghost(object):
@@ -20,33 +19,34 @@ class Ghost(object):
 
     def render(self, surface):
         pygame.draw.ellipse(surface, self.color, (self.pos.x + 4, self.pos.y + 4, self.width - 8, self.width - 8))
-        self.draw_path(surface)
+        # self.draw_path(surface)
 
     def update(self, pacman):
-        self.pos += self.vel
+        # self.pos += self.vel
         self.pacman = pacman
         self.node.x = self.pos.x + d.GRID
         self.node.y = self.pos.y + d.GRID
 
-    def eat_pacman(self) -> bool:  # todo collision check needs a change
-        if self.pos.x == self.pacman.pos.x and self.pos.y == self.pacman.pos.y:
-            return True
+    def eat_pacman(self) -> bool:
+        if self.pacman.pos.x + self.pacman.width >= self.pos.x + self.width >= self.pacman.pos.x + self.pacman.width//2 or \
+                self.pacman.pos.x <= self.pos.x <= self.pacman.pos.x + self.pacman.width//2:
+            if self.pacman.pos.y + self.pacman.width >= self.pos.y + self.width >= self.pacman.pos.y + self.pacman.width//2 or \
+                    self.pacman.pos.y <= self.pos.y <= self.pacman.pos.y + self.pacman.width//2:
+                return True
         return False
 
-    def catch_pacman(self, nodes):
+    def chase_pacman(self, nodes):
         self.node.find_neighbors2(nodes, self.vel)
-        print(self.node.neighbors)
+        # print(self.node.neighbors)
+
         start = self.node
-        goal = self.closest_node_to_pacman(nodes)
+        goal = self.pacman.node
         self.path_to_pacman = a_star(start, goal)
+
         # print(self.path_to_pacman)
         self.node.neighbors.clear()
 
         self.go_to_node(self.path_to_pacman[1])
-
-        # if self.node.x == nodes[37].x and self.node.y == nodes[37].y:
-        #     print(self.vel)
-        #     time.sleep(6)
 
     def draw_path(self, surface):
         path = self.path_to_pacman
@@ -74,22 +74,18 @@ class Ghost(object):
         if self.node.y == node.y:
             if self.node.x != node.x:  # if not arrived at that node
                 if self.node.x < node.x:
-                    print("node is on the right")
+                    # print("node is on the right")
                     self.vel.x = self.speed
                 else:
-                    print("node is on the left")
+                    # print("node is on the left")
                     self.vel.x = -self.speed
                 self.vel.y = 0
-            else:
-                print("arrived at node")
         else:
             if self.node.y != node.y:  # if not arrived at that node
                 if self.node.y < node.y:
-                    print("node is downwards")
+                    # print("node is downwards")
                     self.vel.y = self.speed
                 else:
-                    print("node is upwards")
+                    # print("node is upwards")
                     self.vel.y = -self.speed
                 self.vel.x = 0
-            else:
-                print("arrived at node")

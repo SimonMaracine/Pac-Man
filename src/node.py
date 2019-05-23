@@ -89,21 +89,31 @@ class MobileNode(Node):
     def __init__(self, x, y):
         super().__init__(x, y, ())
 
-    def find_neighbors2(self, nodes: tuple, entity_vel):
-        if entity_vel.x != 0:
-            print("search x")
-            super().find_neighbors(nodes, ("l", "r"))
+    def find_neighbors2(self, nodes: tuple, entity_dir):
+        if entity_dir.x != 0:
             for node in nodes:
                 if self.x == node.x and self.y == node.y:
                     dirs = node.neighbor_dirs
                     super().find_neighbors(nodes, dirs)
-        elif entity_vel.y != 0:
-            print("search y")
-            super().find_neighbors(nodes, ("u", "d"))
+                    break
+            else:
+                # print("search x")
+                super().find_neighbors(nodes, ("l", "r"))
+        elif entity_dir.y != 0:
             for node in nodes:
                 if self.x == node.x and self.y == node.y:
                     dirs = node.neighbor_dirs
                     super().find_neighbors(nodes, dirs)
+                    break
+            else:
+                # print("search y")
+                super().find_neighbors(nodes, ("u", "d"))
+        else:
+            for node in nodes:
+                if self.x == node.x and self.y == node.y:
+                    dirs = node.neighbor_dirs
+                    super().find_neighbors(nodes, dirs)
+                    break
 
 
 def make_nodes() -> tuple:
