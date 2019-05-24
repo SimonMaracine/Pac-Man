@@ -2,7 +2,7 @@ from copy import deepcopy
 import pygame
 from vectormath import Vector2 as Vector
 import src.display as d
-from node import MobileNode
+from src.node import MobileNode
 
 
 class PacMan(object):
@@ -26,7 +26,7 @@ class PacMan(object):
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y, self.width - 6, 5), 1)  # up hitbox
         # pygame.draw.rect(window, (255, 0, 0), (self.pos.x + 3, self.pos.y + self.width - 5, self.width - 6, 5), 1)  # down hitbox
 
-    def update(self, nodes):
+    def update(self):
         self.pos += self.vel
         self.node.x = self.pos.x + d.GRID
         self.node.y = self.pos.y + d.GRID
@@ -52,13 +52,14 @@ class PacMan(object):
             self.dir.x = self.vel.x
             self.dir.y = 0
 
+    def find_neighbors(self, nodes):
         # print(self.dir)
-        print(self.vel)
+        # print(self.vel)
         print(self.pos)
 
         self.node.find_neighbors2(nodes, self.dir)
         # print(self.node.neighbors)
-        # assert self.node.neighbors, "Could not find neighbors. Last dir: " + str(self.dir)
+        assert self.node.neighbors, "Could not find neighbors. Last pos, dir and vel: {}, {}, {}".format(self.pos, self.dir, self.vel)
         for node in self.node.neighbors.values():
             node.neighbors["pacman"] = self.node
         self.node.neighbors.clear()
@@ -79,9 +80,6 @@ class PacMan(object):
                 self.next_vel.y = -self.speed
                 self.next_vel.x = 0
             elif direction == "down":
-                print(self.dir)
-                if self.dir.x != 0:
-                    self.pos.y -= self.speed
                 self.vel.y = self.speed
                 self.next_vel.y = self.speed
                 self.next_vel.x = 0
@@ -122,16 +120,22 @@ class PacMan(object):
             self.next_vel.x = 0
         elif side == "down":
             self.vel.y = 0
-            # self.pos.y -= self.speed
+            self.pos.y -= self.speed
             self.next_vel.x = 0
 
+        self.node.x = self.pos.x + d.GRID
+        self.node.y = self.pos.y + d.GRID
+
     def hit_node(self, node):
-        if self.pos.x - 3 + self.width//2 <= node.x <= self.pos.x + 3 + self.width//2:
-            if self.pos.y - 3 + self.width//2 <= node.y <= self.pos.y + 3 + self.width//2:
+        # if self.pos.x - 3 + self.width//2 <= node.x <= self.pos.x + 3 + self.width//2:
+        #     if self.pos.y - 3 + self.width//2 <= node.y <= self.pos.y + 3 + self.width//2:
+        if self.pos.x + self.width // 2 <= node.x <= self.pos.x + self.width // 2:
+            if self.pos.y + self.width // 2 <= node.y <= self.pos.y + self.width // 2:
                 if self.vel.x != 0:
                     if self.next_vel.y > 0 and "d" in node.neighbors or self.next_vel.y < 0 and "u" in node.neighbors:
-                        self.vel.y = deepcopy(self.next_vel.y) # todo deepcopy might not be needed
+                        self.vel.y = deepcopy(self.next_vel.y)  # todo deepcopy might not be needed
                         self.vel.x = 0
+                        print(0)
                 elif self.vel.y != 0:  # todo node 27 and 30 need "l" and "r" respectively
                     if self.next_vel.x > 0 and "r" in node.neighbors or self.next_vel.x < 0 and "l" in node.neighbors:
                         self.vel.x = deepcopy(self.next_vel.x)

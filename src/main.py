@@ -99,14 +99,14 @@ def main():
             revive()
             revive_ = False
         window.fill((2, 2, 2))
-        pacman.update(nodes)
+        pacman.update()
         for wall in walls:
             wall.render(window)
             pacman.collide(wall)
         # print(pacman.hit_wall)
-
+        pacman.find_neighbors(nodes)
         blinky.update(pacman)
-        # blinky.chase_pacman(nodes)
+        blinky.chase_pacman(nodes)
         if blinky.eat_pacman():
             revive_ = True
         for node in nodes:
@@ -131,4 +131,4 @@ def main():
             show_grid(window)
         show_fps(window, clock, fps_font)
         pygame.display.flip()
-        clock.tick(1)
+        clock.tick(30)

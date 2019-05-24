@@ -19,10 +19,10 @@ class Ghost(object):
 
     def render(self, surface):
         pygame.draw.ellipse(surface, self.color, (self.pos.x + 4, self.pos.y + 4, self.width - 8, self.width - 8))
-        # self.draw_path(surface)
+        self.draw_path(surface)
 
     def update(self, pacman):
-        # self.pos += self.vel
+        self.pos += self.vel
         self.pacman = pacman
         self.node.x = self.pos.x + d.GRID
         self.node.y = self.pos.y + d.GRID

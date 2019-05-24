@@ -33,7 +33,7 @@ class Node(object):
                         break
                     y -= d.GRID
                     for node in nodes:
-                        if node.x == self.x and node.y < self.y:
+                        if node.x + 9 >= self.x >= node.x - 9 and node.y < self.y:
                             if y - d.GRID <= node.y <= y + d.GRID:
                                 self.neighbors["u"] = node
                                 found_neighbor = True
@@ -48,7 +48,7 @@ class Node(object):
                         break
                     x -= d.GRID
                     for node in nodes:
-                        if node.y == self.y and node.x < self.x:
+                        if node.y + 9 >= self.y >= node.y - 9 and node.x < self.x:
                             if x - d.GRID <= node.x <= x + d.GRID:
                                 self.neighbors["l"] = node
                                 found_neighbor = True
@@ -63,7 +63,7 @@ class Node(object):
                         break
                     y += d.GRID
                     for node in nodes:
-                        if node.x == self.x and node.y > self.y:
+                        if node.x + 9 >= self.x >= node.x - 9 and node.y > self.y:
                             if y - d.GRID <= node.y <= y + d.GRID:
                                 self.neighbors["d"] = node
                                 found_neighbor = True
@@ -78,7 +78,7 @@ class Node(object):
                         break
                     x += d.GRID
                     for node in nodes:
-                        if node.y == self.y and node.x > self.x:
+                        if node.y + 9 >= self.y >= node.y - 9 and node.x > self.x:
                             if x - d.GRID <= node.x <= x + d.GRID:
                                 self.neighbors["r"] = node
                                 found_neighbor = True
