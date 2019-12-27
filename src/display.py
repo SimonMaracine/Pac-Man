@@ -3,9 +3,10 @@ import pygame
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init()
-GRID = 0
-WIDTH = 0
-HEIGHT = 0
+
+GRID: int
+WIDTH: int
+HEIGHT: int
 
 
 def set_size(grid, width: int, height: int):

@@ -146,8 +146,8 @@ class PacMan(object):
 
     def eat(self, dots, score) -> int:
         for i in range(len(dots)):
-            if dots[i].x - self.speed * 2 < self.pos.x + self.width//2 < dots[i].x + self.speed * 2 and \
-                    dots[i].y - self.speed * 2 < self.pos.y + self.width//2 < dots[i].y + self.speed * 2:
+            if dots[i].x - self.speed * 2 < self.pos.x + self.width // 2 < dots[i].x + self.speed * 2 and \
+                    dots[i].y - self.speed * 2 < self.pos.y + self.width // 2 < dots[i].y + self.speed * 2:
                 score += dots[i].points
                 del dots[i]
                 break

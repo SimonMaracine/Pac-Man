@@ -28,10 +28,10 @@ class Ghost(object):
         self.node.y = self.pos.y + d.GRID
 
     def eat_pacman(self) -> bool:
-        if self.pacman.pos.x + self.pacman.width >= self.pos.x + self.width >= self.pacman.pos.x + self.pacman.width//2 or \
-                self.pacman.pos.x <= self.pos.x <= self.pacman.pos.x + self.pacman.width//2:
-            if self.pacman.pos.y + self.pacman.width >= self.pos.y + self.width >= self.pacman.pos.y + self.pacman.width//2 or \
-                    self.pacman.pos.y <= self.pos.y <= self.pacman.pos.y + self.pacman.width//2:
+        if self.pacman.pos.x + self.pacman.width >= self.pos.x + self.width >= self.pacman.pos.x + self.pacman.width // 2 or \
+                self.pacman.pos.x <= self.pos.x <= self.pacman.pos.x + self.pacman.width // 2:
+            if self.pacman.pos.y + self.pacman.width >= self.pos.y + self.width >= self.pacman.pos.y + self.pacman.width // 2 or \
+                    self.pacman.pos.y <= self.pos.y <= self.pacman.pos.y + self.pacman.width // 2:
                 return True
         return False
 

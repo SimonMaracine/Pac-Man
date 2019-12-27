@@ -2,7 +2,7 @@ from math import sqrt
 from src.node import Node
 
 
-def find_node_min_f(nodes) -> Node:
+def find_node_min_f(nodes: list) -> Node:
     node_min_f = nodes[0]
     for node in nodes:
         if node.f < node_min_f.f:

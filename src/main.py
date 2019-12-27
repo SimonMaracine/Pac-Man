@@ -39,26 +39,26 @@ def revive():
     if lives < 1:
         score = 0
         lives = 3
-        init_objects(w=False, n=False)
+        init_objects(ws=False, ns=False)
     else:
-        init_objects(w=False, n=False, ds=False, p=False)
+        init_objects(ws=False, ns=False, ds=False, ps=False)
 
 
-def init_objects(pm=True, w=True, n=True, ds=True, p=True, g=True):
+def init_objects(pm=True, ws=True, ns=True, ds=True, ps=True, g=True):
     global pacman, walls, nodes, dots, powers, blinky
     if pm:
         pacman = PacMan()
-    if w:
+    if ws:
         walls = make_walls()
-    if n:
+    if ns:
         nodes = make_nodes()
     if ds:
         dots = make_dots(walls)
-        assert len(dots) == 242, "There have to be 242 dots, not " + str(len(dots))
-    if p:
+        assert len(dots) == 242, "There has to be 242 dots, not " + str(len(dots))
+    if ps:
         powers = make_powers()
     if g:
-        blinky = Ghost(13 * d.GRID + d.GRID//2, 13 * d.GRID)
+        blinky = Ghost(13 * d.GRID + d.GRID // 2, 13 * d.GRID)
 
 
 def main():
@@ -119,7 +119,7 @@ def main():
         score = pacman.eat(powers, score)
         if not dots:
             pygame.time.wait(1000)
-            init_objects(w=False, n=False)
+            init_objects(ws=False, ns=False)
         for dot in dots:
             dot.render(window)
         for power in powers:
