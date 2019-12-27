@@ -37,13 +37,14 @@ class Ghost(object):
 
     def chase_pacman(self, nodes):
         self.node.find_neighbors2(nodes, self.vel)
+        self.search_pacman(nodes)
         # print(self.node.neighbors)
 
         start = self.node
         goal = self.pacman.node
         self.path_to_pacman = a_star(start, goal)
 
-        # print(self.path_to_pacman)
+        print(self.path_to_pacman)
         self.node.neighbors.clear()
 
         self.go_to_node(self.path_to_pacman[1])
@@ -63,8 +64,8 @@ class Ghost(object):
 
         closest_node = possible_nodes[0]
         for node in possible_nodes:
-            dist = sqrt((self.pacman.pos.x - node.x) ** 2 + (self.pacman.pos.y - node.y) ** 2)
-            if dist < sqrt((self.pacman.pos.x - closest_node.x) ** 2 + (self.pacman.pos.y - closest_node.y) ** 2):
+            dis = dist(self.pacman.pos.x, self.pacman.pos.y, node.x, node.y)
+            if dis < dist(self.pacman.pos.x, self.pacman.pos.y, closest_node.x, closest_node.y):
                 closest_node = node
 
         return closest_node
@@ -89,3 +90,15 @@ class Ghost(object):
                     # print("node is upwards")
                     self.vel.y = -self.speed
                 self.vel.x = 0
+
+    def search_pacman(self, nodes):
+        if self.node.y == self.pacman.node.y or self.node.x == self.pacman.node.y:
+            for node in self.node.neighbors:
+                for n in self.pacman.node.neighbors:
+                    if node == n:
+                        print(0)
+                        self.node.neighbors["pacman"] = self.pacman.node
+
+
+def dist(x1, y1, x2, y2) -> float:
+    return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)

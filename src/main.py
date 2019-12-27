@@ -81,9 +81,9 @@ def main():
                 elif event.key == pygame.K_r:
                     # pygame.time.wait(1000)
                     revive_ = True
-                elif event.key == pygame.K_g: # temporary
+                elif event.key == pygame.K_g:  # temporary
                     g = not g
-                elif event.key == pygame.K_n: # temporary
+                elif event.key == pygame.K_n:  # temporary
                     n = not n
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
@@ -114,6 +114,7 @@ def main():
                 node.render(window)
             pacman.hit_node(node)
             node.neighbors["pacman"] = None
+            node.neighbors["center"] = None
         score = pacman.eat(dots, score)
         score = pacman.eat(powers, score)
         if not dots:

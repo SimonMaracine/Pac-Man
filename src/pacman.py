@@ -55,9 +55,12 @@ class PacMan(object):
     def find_neighbors(self, nodes):
         # print(self.dir)
         # print(self.vel)
-        print(self.pos)
+        # print(self.pos)
 
         self.node.find_neighbors2(nodes, self.dir)
+        for node in nodes:
+            if self.node.x == node.x and self.node.y == node.y:
+                self.node.neighbors["center"] = node
         # print(self.node.neighbors)
         assert self.node.neighbors, "Could not find neighbors. Last pos, dir and vel: {}, {}, {}".format(self.pos, self.dir, self.vel)
         for node in self.node.neighbors.values():
